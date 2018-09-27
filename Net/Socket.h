@@ -9,16 +9,23 @@
 #include "Mboost.h"
 
 //socket类，封装了操作的socket类
-
-class Socket:Mboost::noncopyable{
+namespace ZL {
+namespace Net {
+class Socket : Mboost::noncopyable {
 
 public:
-    Socket(const char *ip,int port);
+    explicit Socket(sockaddr_in &addr);
+
     ~Socket();
+
     void bind();
+
     void Connect();
+
     void listen();
+
     int accept();
+
     //关闭套节字的写
     void shutdownwrit();
 
@@ -40,9 +47,10 @@ public:
     void setKeepAlive(bool on);
 
 private:
-     int socketfd;
-     sockaddr_in server_in;
+    int socketfd;
+    sockaddr_in server_in;
 };
 
-
+}
+}
 #endif //NET_SOCKET_H

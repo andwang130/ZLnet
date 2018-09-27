@@ -5,10 +5,12 @@
 #ifndef NET_TCPSERVER_H
 #define NET_TCPSERVER_H
 
-
+namespace ZL {
+namespace Net {
 class TcpServer {
 
 };
-
+}
+}
 
 #endif //NET_TCPSERVER_H

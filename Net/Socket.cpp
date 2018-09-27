@@ -9,12 +9,14 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <errno.h>
-Socket::Socket(const char *ip,int port)
+using  namespace ZL;
+using namespace ZL::Net;
+Socket::Socket(sockaddr_in &addr)
 {
 
     server_in.sin_family=AF_INET;
-    server_in.sin_addr.s_addr=inet_addr(ip);
-    server_in.sin_port=htons(port);
+    server_in.sin_addr.s_addr=addr.sin_addr.s_addr;
+    server_in.sin_port=addr.sin_port;
     socketfd=socket(AF_INET,SOCK_STREAM,0);
 }
 
