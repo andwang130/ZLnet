@@ -7,11 +7,17 @@
 
 #include <iostream>
 #include <functional>
+
+//Channel类对应一个文件描述符和他要监听的事件,和监听到的事件事件对应的回调函数
 namespace ZL {
 namespace Net {
+class Evevtloop;
 class Channel {
     typedef std::function<void()> EventCallback;//定义一个发生事件时的回调函数
 public:
+
+    //构造函数，两个参数。一个改对象属于的Eventloop的指针，和socket描述符
+    Channel(Evevtloop *loop_,int fd);
     //设置可读事件的回调函数
     void setreadCallbck(const EventCallback &cb);
 
@@ -23,14 +29,26 @@ public:
 
     //设置发生错误事件的回调函数
     void seteeorCallbck(const EventCallback &cb);
-
+    //有事件发生时执行的函数，在Eventloop当中执行
+    void handleEvent(int time);
+    bool isNoneEvent();
+    int get_index();
+    int get_fd();
+    void set_index();
+    int get_events();
+    void set_revents();
 private:
-    int events_; //事件类型
+    Eventloop *loop;//这个对象属于的Eventloop
+    void update();
+    //Channel的状态，3种状态，初始状态为New_(1),表示新的连接还没有添加到Epoolpoller当中,kaddr(2)在poller当中了,kdeltetd(3)不在pooler当中,
+    int index_;
+    int events_; //监听的事件类型
+    int revents_;//响应的事件类型
     const int sockefd;//对应的socket描述符
-    EventCallback readCallback;
-    EventCallback writeCallbck;
-    EventCallback eeorCallbck;
-    EventCallback closeCallbck;
+    EventCallback readCallback;  //可读事件回调函数
+    EventCallback writeCallbck;   //可写事件回调函数
+    EventCallback eeorCallbck;   //出现错误的回调函数
+    EventCallback closeCallbck;  //关闭事件的回调函数
 
     };
 }
