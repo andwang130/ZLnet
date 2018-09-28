@@ -10,6 +10,6 @@ inetAddress::inetAddress(const char *ip, int port)
     addr.sin_port=htonl(port);
     if (::inet_pton(AF_INET, ip,addr.sin_addr) <= 0)
     {
-        LOG_SYSERR << "sockets::fromIpPort";
+        //LOG_SYSERR << "sockets::fromIpPort";
     }
 }

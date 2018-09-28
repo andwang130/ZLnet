@@ -5,6 +5,7 @@
 #include "Channel.h"
 #include <sys/epoll.h>
 #include <poll.h>
+#include "Eventloop.h"
 using namespace ZL;
 using namespace ZL::Net;
 
@@ -27,13 +28,13 @@ void Channel::seteeorCallbck(const EventCallback &cb)
 {
     seteeorCallbck=cb;
 }
-void Channel::closeCallbck(const EventCallback &cb)
+void Channel::setcloseCallbck(const EventCallback &cb)
 {
     closeCallbck=cb;
 }
 void Channel::update()
 {
-    loop->update
+    loop->updateChannel(this);
 }
 int Channel::get_index()
 {
@@ -62,13 +63,47 @@ void Channel::set_revents(int e)
 }
 void Channel::handleEvent(int time)
 {
-    if(revents_==EPOLLIN)
+    if(revents_&EPOLLHUP&&!(events_&EPOLLIN))  //对方描述符挂起,并且没有可读事件
     {
-
+        if(closeCallbck)
+        {
+            closeCallbck();
+        }
     }
-    else if(revents_==EP)
+    if(revents_&EPOLLERR)
     {
-
+        if(eeorCallbck)
+        {
+            eeorCallbck();
+        }
+    }
+    if(revents_&(EPOLLIN | EPOLLPRI |EPOLLRDHUP))
+    {
+        if(readCallback)
+        {
+            readCallback();
+        }
+    }
+    if(revents_&EPOLLOUT)
+    {
+        if(writeCallbck)
+        {
+            writeCallbck();
+        }
     }
 
+}
+void Channel::disableAll()
+{
+    events_=NoneEvent;
+    update();
+}
+
+bool Channel::isWriting()
+{
+    return events_&WriteEvent;
+}
+bool Channel::isReading()
+{
+    return events_&ReadEvent;
 }

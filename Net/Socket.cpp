@@ -19,7 +19,10 @@ Socket::Socket(sockaddr_in &addr)
     server_in.sin_port=addr.sin_port;
     socketfd=socket(AF_INET,SOCK_STREAM,0);
 }
-
+Socket::Socket(int fd)
+{
+    socketfd=fd;
+}
 Socket::~Socket()
 {
     ::close(socketfd);

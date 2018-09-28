@@ -7,6 +7,7 @@
 
 #include<iostream>
 #include <vector>
+#include <memory>
 namespace ZL {
 namespace Net {
 class Epollpoller;
@@ -17,11 +18,13 @@ public:
     Eventloop();
     void loop();
     void updateChannel(Channel *channel);
+    void removeChannel(Channel *channel);
 private:
     std::unique_ptr<Epollpoller> poller; //unique_ptr智能指针。无法复制的指针
     bool quit_;
+    bool Handling_;
     std::vector<Channel *> channells;
-
+    Channel *currentActiveChannel_;
 };
     }
 }

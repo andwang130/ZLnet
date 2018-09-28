@@ -15,7 +15,7 @@ namespace  ZL {
 namespace Net {
 class inetAddress; //类的向前申明
 class EventLoop;
-
+class Channel;
 typedef std::function<void(int socketfd, const inetAddress &)> NewConnectionCallback;
 
 class Acceptor : public Mboost::noncopyable {
@@ -40,7 +40,7 @@ private:
 
     EventLoop *_loop;
     Socket socket_;  //scoket类，封装的sokcet的系统函数
-    //Channel acceptChannel_;
+    Channel *acceptChannel_;
     NewConnectionCallback newConnectionCallback_;
     bool listenning_;//是否监听状态。初始化值为flase，在listen之后设置为true
     int idleFd_; //文件描述符

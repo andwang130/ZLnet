@@ -14,24 +14,33 @@ namespace Net {
 class Evevtloop;
 class Channel {
     typedef std::function<void()> EventCallback;//定义一个发生事件时的回调函数
+    typedef std::function<void(int)> ReadEventback;
 public:
 
     //构造函数，两个参数。一个改对象属于的Eventloop的指针，和socket描述符
     Channel(Evevtloop *loop_,int fd);
     //设置可读事件的回调函数
-    void setreadCallbck(const EventCallback &cb);
+    void setreadCallbck(const readCallback &cb);
 
     //设置可写事件的回调函数
     void setwriteCallbck(const EventCallback &cb);
 
     //设置关闭事件的回调函数
-    void closeCallbck(const EventCallback &cb);
+    void setcloseCallbck(const EventCallback &cb);
 
     //设置发生错误事件的回调函数
     void seteeorCallbck(const EventCallback &cb);
     //有事件发生时执行的函数，在Eventloop当中执行
     void handleEvent(int time);
     bool isNoneEvent();
+
+    //返回注册事件是否是写入事件
+    bool isWriting();
+
+    //返回注册事件是否是读取事件
+    bool isReading();
+    //从epoll删除
+    void disableAll();
     int get_index();
     int get_fd();
     void set_index();
@@ -45,7 +54,7 @@ private:
     int events_; //监听的事件类型
     int revents_;//响应的事件类型
     const int sockefd;//对应的socket描述符
-    EventCallback readCallback;  //可读事件回调函数
+    ReadEventback readCallback;  //可读事件回调函数
     EventCallback writeCallbck;   //可写事件回调函数
     EventCallback eeorCallbck;   //出现错误的回调函数
     EventCallback closeCallbck;  //关闭事件的回调函数

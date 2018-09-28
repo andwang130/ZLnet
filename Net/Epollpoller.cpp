@@ -15,17 +15,17 @@ const int eventnumber=16;
 
 int Epollpoller::poll(int timeoutMs,ChannelList &channells)
 {           //&*eventlist.begin()取vecort第一个值的指针,timeoutMs超时时间
-    int ret=epoll_wait(epoolfd,&*eventlist.begin(), static_cast<int>(eventlist.size()),timeoutMs)
+    int ret=epoll_wait(epoolfd,&*eventlist.begin(), static_cast<int>(eventlist.size()),timeoutMs);
     int savedErrno = errno;
     if(ret>0)
     {
         for(int i=0;i<ret;i++)
         {
-            Channel *channel= static_cast<Channel*>eventlist[i].data.ptr;
+            Channel *channel= static_cast<Channel*>(eventlist[i].data.ptr);
             channel->set_revents(eventlist[i].events);
             channells.push_back(channel);
         }
-        if(static_cast<size_t>ret==eventlist.size())
+        if(static_cast<size_t>(ret)==eventlist.size())
         {
             eventlist.resize(eventlist.size()*2);
         }
@@ -87,7 +87,7 @@ void Epollpoller::updateChannel(Channel *channel)
 void Epollpoller::update(int option,Channel *channel)
 {
     epoll_event event;
-    memset(&event,0, sizeof(event))//将event的内存清零
+    memset(&event,0, sizeof(event));//将event的内存清零
     event.data.ptr=channel;
     event.events=channel->get_events();
     int fd=channel->get_fd();
@@ -106,10 +106,10 @@ void Epollpoller::removeChannel(Channel *channel)
     int index=channel->get_index();
 
     //kadd，kdeleted两种状态channel才在channels_当中
-    assert(index==kadd||index==kdeleted)
+    assert(index==kadd||index==kdeleted);
     size_t n=channels_.erase(fd);
     //删除成功返回1
-    assert(n==1)
+    assert(n==1);
     if(index==kadd) //kadd状态，还在epool当种。从epool当中删除
     {
         update(EPOLL_CTL_DEL,channel);
@@ -120,6 +120,6 @@ void Epollpoller::removeChannel(Channel *channel)
 }
 Epollpoller::Epollpoller()
 {
-    epoolfd=epoll_create1(EPOLL_CLOEXEC)
+    epoolfd=epoll_create1(EPOLL_CLOEXEC);
     eventlist(eventnumber);
 }
