@@ -25,7 +25,7 @@ class Tcpcoonetion:std::enable_shared_from_this<Tcpcoonetion>
     typedef std::function<void(const TcpcoontionPrt&,Buffer *buffer,int timeMs)> MessageCallback;
 public:
     Tcpcoonetion(Eventloop *loop,int fd);
-
+    void send()
     //设置回调函数
     void set_coonCallback(const ConnectionCallback &cb);
 
@@ -34,8 +34,17 @@ public:
     void set_writecallback(const WriteCompleteCallback & cb);
 
     void set_messageCallback(const MessageCallback &cb);
+
+    //启动监听可读事件
+    void connectEstablished();
+
+    //关闭监听事件，从eventloop中移除Channel
+    void connectDestroyed();
+
 private:
 
+    enum StateE { kDisconnected, kConnecting, kConnected, kDisconnecting };
+    void setstate(StateE st);
     //关闭事件回调函数，注册到Channel当中
     void handleColse();
 
@@ -48,9 +57,11 @@ private:
     //错误事件回调函数
     void handleeeor();
 
-    //每一个coonet都有一个Channel来连接Eventloop和epool
-    Channel *channel_;
 
+    void shutdownInLoop();
+
+    //每一个coonet都有一个Channel来连接Eventloop和epool
+    std::shared_ptr<Channel> channel_;
     //该连接所属的Eventloop
     Eventloop *loop_;
 
@@ -68,9 +79,9 @@ private:
 
     //该链接的文件描述符
     const int socketfd;
-
+    StateE state_;  //连接所处的状态
     //Socket
-    std::unique_ptr<Socket>scoektprt;
+    std::shared_ptr<Socket>scoektprt;
     Buffer inputBuffer;  //接受缓存区
     Buffer ouptBuffer;  //发送缓存区
 };

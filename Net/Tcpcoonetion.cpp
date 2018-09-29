@@ -10,7 +10,8 @@ using namespace Net;
 Tcpcoonetion::Tcpcoonetion(Eventloop *loop ,int fd):loop_(loop),
                                                     channel_(new Channel(loop,fd)),
                                                     socketfd(fd),
-                                                    scoektprt(new Socket(fd))
+                                                    scoektprt(new Socket(fd)),
+                                                    state_(kConnecting)
 {
     channel_->setcloseCallbck(std::bind(&Tcpcoonetion::handleColse,this));
     channel_->setwriteCallbck(std::bind(&Tcpcoonetion::handlewrite,this));
@@ -51,12 +52,34 @@ void Tcpcoonetion::handlewrite()
 
     if(channel_->isWriting())
     { //注册了可写事件
-       ssize_t  n=write(channel_->get_fd(),inputBuffer.peek(),inputBuffer.readableBytes());
+       ssize_t  n=write(channel_->get_fd(),ouptBuffer.peek(),ouptBuffer.readableBytes());
        if(n>0)
        {   //写入了N个字节，缓存区的下标向后挪动N个字节
-           inputBuffer.retrieve(n);
+           ouptBuffer.retrieve(n);
+           //readableBytes返回剩余的字节
+           if(ouptBuffer.readableBytes()==0)
+           {    //缓冲区的数据全部发送完了,关闭可写事件的监听
+               channel_->disableWriting()
+               if(writecallback)
+               {
+                   loop_->queueInLoop(std::bind(writecallback,shared_from_this()))//回调函数传入线程队列
+               }
+               if(state_==kDisconnecting)
+               {
+                   shutdownInLoop();
+               }
+           }
+       }
+       else
+       {
+         //log
        }
 
+
+    }
+    else
+    {
+        //log
     }
 
 }
@@ -94,4 +117,46 @@ void Tcpcoonetion::handleeeor()
 {
     //int err = getSocketError(channel_->fd());
 
+}
+void Tcpcoonetion::shutdownInLoop()
+{
+
+    if(!channel_->isWriting())//
+    {
+        scoektprt->shutdownwrit();
+    }
+
+}
+void sendloop()
+{
+
+}
+void Tcpcoonetion::setstate(StateE st)
+{
+
+        state_=st;
+
+}
+void Tcpcoonetion::connectEstablished()
+{
+
+    setstate(kConnected); //状态设置为监听种
+    //开启可读事件监听
+    channel_->enableReading();
+    if(coonCallback)
+    {
+        coonCallback(shared_from_this());
+    }
+
+
+}
+void Tcpcoonetion::connectDestroyed()
+{
+    if(state_==kConnected)
+    {
+        setstate(kDisconnected);
+        channel_->disableAll();
+        coonCallback(shared_from_this());
+    }
+    channel_->remove();
 }

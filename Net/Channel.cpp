@@ -34,6 +34,7 @@ void Channel::setcloseCallbck(const EventCallback &cb)
 }
 void Channel::update()
 {
+    addedToLoop_= true;
     loop->updateChannel(this);
 }
 int Channel::get_index()
@@ -77,7 +78,7 @@ void Channel::handleEvent(int time)
             eeorCallbck();
         }
     }
-    if(revents_&(EPOLLIN | EPOLLPRI |EPOLLRDHUP))
+    if(revents_&(EPOLLIN|EPOLLPRI|EPOLLRDHUP))
     {
         if(readCallback)
         {
@@ -95,10 +96,33 @@ void Channel::handleEvent(int time)
 }
 void Channel::disableAll()
 {
-    events_=NoneEvent;
+    events_=NoneEvent;  //事件设置为0
     update();
 }
 
+void Channel::disableWriting()
+{
+   events_&=~WriteEvent;//事件取消一个写入事件
+   update();
+}
+void Channel::enableWriting()
+{
+    events_|=WriteEvent;  //添加一个写入事件
+    update();
+}
+
+void Channel::disableReading()
+{
+    //取消一个读取事件
+    events_&=~ReadEvent;
+    update();
+}
+void Channel::enableReading()
+{
+    //添加一个读取事件
+    events_|=ReadEvent;
+    update();
+}
 bool Channel::isWriting()
 {
     return events_&WriteEvent;
@@ -106,4 +130,9 @@ bool Channel::isWriting()
 bool Channel::isReading()
 {
     return events_&ReadEvent;
+}
+
+void Channel::remove()
+{   addedToLoop_= false;
+    loop->removeChannel(this);
 }

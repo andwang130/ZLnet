@@ -41,11 +41,17 @@ public:
     bool isReading();
     //从epoll删除
     void disableAll();
+    void enableReading();
+    void disableReading();
+    void enableWriting();
+    void disableWriting();
     int get_index();
     int get_fd();
     void set_index();
     int get_events();
     void set_revents();
+
+    void remove();
 private:
     Eventloop *loop;//这个对象属于的Eventloop
     void update();
@@ -54,6 +60,7 @@ private:
     int events_; //监听的事件类型
     int revents_;//响应的事件类型
     const int sockefd;//对应的socket描述符
+    bool addedToLoop_;
     ReadEventback readCallback;  //可读事件回调函数
     EventCallback writeCallbck;   //可写事件回调函数
     EventCallback eeorCallbck;   //出现错误的回调函数
