@@ -6,7 +6,7 @@
 #define NET_BUFFER_H
 
 #include <vector>
-
+#include "StringPiece.h"
 class Buffer {
 
 

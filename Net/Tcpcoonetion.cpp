@@ -67,7 +67,7 @@ void Tcpcoonetion::handlewrite()
                if(state_==kDisconnecting)
                {
                    shutdownInLoop();
-               }
+               }shutdownInLoop
            }
        }
        else

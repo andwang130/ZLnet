@@ -4,6 +4,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/Net.dir/Mboost.cpp.o"
   "CMakeFiles/Net.dir/Socket.cpp.o"
   "CMakeFiles/Net.dir/TcpServer.cpp.o"
+  "CMakeFiles/Net.dir/EventloopThread.cpp.o"
   "Net.pdb"
   "Net"
 )

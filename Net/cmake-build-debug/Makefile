@@ -150,6 +150,33 @@ Acceptor.cpp.s:
 	$(MAKE) -f CMakeFiles/Net.dir/build.make CMakeFiles/Net.dir/Acceptor.cpp.s
 .PHONY : Acceptor.cpp.s
 
+EventloopThread.o: EventloopThread.cpp.o
+
+.PHONY : EventloopThread.o
+
+# target to build an object file
+EventloopThread.cpp.o:
+	$(MAKE) -f CMakeFiles/Net.dir/build.make CMakeFiles/Net.dir/EventloopThread.cpp.o
+.PHONY : EventloopThread.cpp.o
+
+EventloopThread.i: EventloopThread.cpp.i
+
+.PHONY : EventloopThread.i
+
+# target to preprocess a source file
+EventloopThread.cpp.i:
+	$(MAKE) -f CMakeFiles/Net.dir/build.make CMakeFiles/Net.dir/EventloopThread.cpp.i
+.PHONY : EventloopThread.cpp.i
+
+EventloopThread.s: EventloopThread.cpp.s
+
+.PHONY : EventloopThread.s
+
+# target to generate assembly for a file
+EventloopThread.cpp.s:
+	$(MAKE) -f CMakeFiles/Net.dir/build.make CMakeFiles/Net.dir/EventloopThread.cpp.s
+.PHONY : EventloopThread.cpp.s
+
 Mboost.o: Mboost.cpp.o
 
 .PHONY : Mboost.o
@@ -270,6 +297,9 @@ help:
 	@echo "... Acceptor.o"
 	@echo "... Acceptor.i"
 	@echo "... Acceptor.s"
+	@echo "... EventloopThread.o"
+	@echo "... EventloopThread.i"
+	@echo "... EventloopThread.s"
 	@echo "... Mboost.o"
 	@echo "... Mboost.i"
 	@echo "... Mboost.s"

@@ -6,13 +6,36 @@
 #include "Epollpoller.h"
 #include "Channel.h"
 #include <assert.h>
+#include "CurrentThread.h"
+#include <sys/eventfd.h>
 using namespace ZL;
 using namespace ZL::Net;
 const int timeOutMS=1000;
+
+
+int createEventfd()
+{
+    int evtfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);  //获得一个文件描述符
+    if (evtfd < 0)
+    {
+        //LOG_SYSERR << "Failed in eventfd";
+        abort();
+    }
+    return evtfd;
+}
+
 Eventloop::Eventloop():poller(new Epollpoller()),
                        quit_(true),
-                       currentActiveChannel_(nullptr)
+                       callingPendingFunctors(false);
+                       threadId_(CurrentThread::tid()),
+                       currentActiveChannel_(nullptr),
+                       eventHandling_(false),
+                       wakeupFd_(createEventfd)
+                       wakeupChannel_(new Channel(this,wakeupFd_))
+
 {
+wakeupChannel_->setreadCallbck(std::bind(&Eventloop::readhanel,this));//设置可读回调函数
+wakeupChannel_->enableReading();//开启可读事件监听
 
 }
 
@@ -24,14 +47,19 @@ void Eventloop::loop()
         channells.clear();
         int timeMs=poller->poll(timeOutMS,channells);
         if(channells.empty())
-        {   Handling_= true;
+
+        {  printActiveChannels();//输出一下发生的事件
+            eventHandling_= true;  //处理事件中
             for(std::vector<Channel *>::iterator ite=channells.begin();ite!=channells.end();ite++)
             {
                 currentActiveChannel_=*ite;
                 currentActiveChannel_->handleEvent(timeMs);
             }
             currentActiveChannel_= nullptr;
+            eventHandling_= false;  //处理完成
+            doPendingFunctors();
         }
+
         Handling_= false;
     }
 }
@@ -49,3 +77,76 @@ void Eventloop::removeChannel(Channel *channel)
     poller->removeChannel(channel);
 
 }
+bool Eventloop::isInLoopThread() const
+{
+    return threadId_==CurrentThread::tid();
+}
+
+void Eventloop::runinLoop(Functor &cb) {
+    if(isInLoopThread())
+    {
+        cb()
+    }
+    else
+    {
+        queueInLoop(cb)
+    }
+}
+void Eventloop::queueInLoop(Functor &cb)
+{
+    MutexLock.lock();
+    pendingFunctors_.push_back(cb);//添加任务
+    MutexLock.unlock();
+    if(!isInLoopThread()||callingPendingFunctors)
+    {
+        wakeup()
+    }
+
+}
+
+void Eventloop::wakeup()
+{
+    uint64_t one = 1;
+    ssize_t n = ::write(wakeupFd_, &one, sizeof one);
+    if (n != sizeof one)
+    {
+        //log
+    }
+}
+
+
+void Eventloop::readhanel()
+{
+    uint64_t one = 1;
+    ssize_t n = ::read(wakeupFd_, &one, sizeof one);
+    if (n != sizeof one)
+    {
+        //LOG_ERROR << "EventLoop::handleRead() reads " << n << " bytes instead of 8";
+    }
+}
+
+void Eventloop::doPendingFunctors()
+{
+    //创建一个新的vector来存任务队列
+    std::vector<Functor> newpendingFunctors_;
+    callingPendingFunctors= true;
+    MutexLock.lock();
+    newpendingFunctors_.swap(pendingFunctors_);//交换值
+    MutexLock.unlock();
+    for(int i=0;i<newpendingFunctors_.size();i++)
+    {  //执行任务队列中的函数
+        newpendingFunctors_[i]();
+    }
+    callingPendingFunctors= false;
+
+}
+void EventLoop::printActiveChannels() const
+{
+    //输出发生的事件
+//   for(auto i::channells)
+//   {
+//       const Channel* ch = *it;
+//
+//   }
+}
+

@@ -84,10 +84,19 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/wj/ZLnet/CurrentThread.h">
+			<Option target="Net"/>
+		</Unit>
 		<Unit filename="/home/wj/ZLnet/Net/Acceptor.cpp">
 			<Option target="Net"/>
 		</Unit>
 		<Unit filename="/home/wj/ZLnet/Net/Acceptor.h">
+			<Option target="Net"/>
+		</Unit>
+		<Unit filename="/home/wj/ZLnet/Net/EventloopThread.cpp">
+			<Option target="Net"/>
+		</Unit>
+		<Unit filename="/home/wj/ZLnet/Net/EventloopThread.h">
 			<Option target="Net"/>
 		</Unit>
 		<Unit filename="/home/wj/ZLnet/Net/Mboost.cpp">
@@ -102,10 +111,16 @@
 		<Unit filename="/home/wj/ZLnet/Net/Socket.h">
 			<Option target="Net"/>
 		</Unit>
+		<Unit filename="/home/wj/ZLnet/Net/StringPiece.h">
+			<Option target="Net"/>
+		</Unit>
 		<Unit filename="/home/wj/ZLnet/Net/TcpServer.cpp">
 			<Option target="Net"/>
 		</Unit>
 		<Unit filename="/home/wj/ZLnet/Net/TcpServer.h">
+			<Option target="Net"/>
+		</Unit>
+		<Unit filename="/home/wj/ZLnet/Net/Types.h">
 			<Option target="Net"/>
 		</Unit>
 		<Unit filename="/home/wj/ZLnet/Net/main.cpp">
