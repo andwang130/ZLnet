@@ -9,9 +9,10 @@
 #include <vector>
 #include <memory>
 #include <mutex>
+#include <functional>
+#include "Epollpoller.h"
 namespace ZL {
 namespace Net {
-class Epollpoller;
 class Channel;
 
 class Eventloop {
@@ -21,7 +22,12 @@ public:
 
     //执行事件监听
     void loop();
+
+    //
+    void quit();
+
     void updateChannel(Channel *channel);
+
     void removeChannel(Channel *channel);
 
     //向任务队列添加一个任务
@@ -39,8 +45,10 @@ public:
     //wakeupChannel_的可读回调函数
     void readhanel();
 
+
     void printActiveChannels() const;
 private:
+    bool   quit_ ;
     //执行任务队列函数
     void doPendingFunctors();
 
@@ -52,11 +60,11 @@ private:
 
     //使用一个文件表述符了来通知任务队列
     std::shared_ptr<Channel> wakeupChannel_;//文件描述符对应的Channel
-
+    bool looping_;//是否处于loop状态
     bool eventHandling_;  //是否在执行回调事件状态
     const pid_t threadId_;
     bool callingPendingFunctors;  //任务队列执行状态
-    bool quit_;
+
     std::vector<Channel *> channells;
     Channel *currentActiveChannel_;
     std::vector<Functor> pendingFunctors_;//任务队列

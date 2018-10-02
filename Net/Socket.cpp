@@ -138,7 +138,7 @@ void Socket::setReusePort(bool on)
     int ret=::setsockopt(socketfd,SOL_SOCKET,SO_REUSEADDR,&poval, static_cast<socklen_t >(sizeof(poval)));
     if(ret<0)
     {
-
+        //log
     }
 }
 

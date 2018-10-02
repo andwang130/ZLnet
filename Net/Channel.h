@@ -6,21 +6,22 @@
 #define NET_CHANNEL_H
 
 #include <iostream>
+//#include <Eventloop.h>
 #include <functional>
 
 //Channel类对应一个文件描述符和他要监听的事件,和监听到的事件事件对应的回调函数
 namespace ZL {
 namespace Net {
-class Evevtloop;
+class Eventloop;
 class Channel {
     typedef std::function<void()> EventCallback;//定义一个发生事件时的回调函数
     typedef std::function<void(int)> ReadEventback;
 public:
 
     //构造函数，两个参数。一个改对象属于的Eventloop的指针，和socket描述符
-    Channel(Evevtloop *loop_,int fd);
+    Channel(Eventloop *loop_,int fd);
     //设置可读事件的回调函数
-    void setreadCallbck(const readCallback &cb);
+    void setreadCallbck(const ReadEventback &cb);
 
     //设置可写事件的回调函数
     void setwriteCallbck(const EventCallback &cb);
@@ -47,10 +48,12 @@ public:
     void disableWriting();
     int get_index();
     int get_fd();
-    void set_index();
+    void set_index(int index );
     int get_events();
-    void set_revents();
+    void set_revents(int e);
 
+    //返回当前Channel属于的loop
+    Eventloop * ownerLoop();
     void remove();
 private:
     Eventloop *loop;//这个对象属于的Eventloop

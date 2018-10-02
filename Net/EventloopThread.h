@@ -8,20 +8,30 @@
 #include "Mboost.h"
 #include <thread>
 #include "Eventloop.h"
-
+#include <mutex>
+#include <functional>
+#include <condition_variable>
 //Eventloop对应的信线程，EventloopThread有一个线程和Evevtloop对象
 using namespace ZL;
 using namespace ZL::Net;
 
 class EventloopThread:Mboost::noncopyable
 {
+    typedef std::function<void(Eventloop *)> ThreadInitCallback;
 
- EventloopThread();
-
+ EventloopThread(ThreadInitCallback &cb);
+ ~EventloopThread();
+ Eventloop * starLoop();
 private:
+    void theradfun();
     Eventloop *loop_ ;
     std::thread thread_;
+    std::mutex MutexLock;
 
+    //condition_variabley用于线程之间的通信
+    std::condition_variable cond;
+     //线程启动后的回调函数
+    ThreadInitCallback callback_;
 };
 
 

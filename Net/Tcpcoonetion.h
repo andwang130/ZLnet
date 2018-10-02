@@ -25,7 +25,7 @@ class Tcpcoonetion:std::enable_shared_from_this<Tcpcoonetion>
     typedef std::function<void(const TcpcoontionPrt&,Buffer *buffer,int timeMs)> MessageCallback;
 public:
     Tcpcoonetion(Eventloop *loop,int fd);
-    void send()
+    void send();
     //设置回调函数
     void set_coonCallback(const ConnectionCallback &cb);
 

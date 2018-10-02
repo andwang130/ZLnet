@@ -20,12 +20,12 @@ class Epollpoller {
 
 public:
     Epollpoller();
-    int poll(int timeoutMs,ChannelList &channells)
+    int poll(int timeoutMs,ChannelList &channells);
     void updateChannel(Channel *channel);
     void removeChannel(Channel *channel);
 
 private:
-    void update(Channel *channel);
+    void update(int option ,Channel *channel);
     Channel_map channels_;
     int epoolfd;
     Eventlist eventlist;

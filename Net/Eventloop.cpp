@@ -12,7 +12,6 @@ using namespace ZL;
 using namespace ZL::Net;
 const int timeOutMS=1000;
 
-
 int createEventfd()
 {
     int evtfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);  //获得一个文件描述符
@@ -25,12 +24,13 @@ int createEventfd()
 }
 
 Eventloop::Eventloop():poller(new Epollpoller()),
-                       quit_(true),
-                       callingPendingFunctors(false);
+                       quit_(false),
+                       looping_(false),
+                       callingPendingFunctors(false),
                        threadId_(CurrentThread::tid()),
                        currentActiveChannel_(nullptr),
                        eventHandling_(false),
-                       wakeupFd_(createEventfd)
+                       wakeupFd_(createEventfd()),
                        wakeupChannel_(new Channel(this,wakeupFd_))
 
 {
@@ -40,8 +40,9 @@ wakeupChannel_->enableReading();//开启可读事件监听
 }
 
 void Eventloop::loop()
-{
-    while (quit_)
+{   looping_= true;
+    quit_=false;
+    while (!quit_)
     {
 
         channells.clear();
@@ -60,19 +61,27 @@ void Eventloop::loop()
             doPendingFunctors();
         }
 
-        Handling_= false;
+        looping_ = false;
     }
+}
+void Eventloop::quit()
+{
+    quit_= true;
+    if(!isInLoopThread())
+    {
+        wakeup();
+    }
+
 }
 void Eventloop::updateChannel(Channel *channel)
 {
-    pooler->updateChannel(channel);
+    poller->updateChannel(channel);
 }
 void Eventloop::removeChannel(Channel *channel)
-{
-    if(Handling_) //在执行相应事件当中，不能移除当前和发生事件的channel
+{ assert(channel->ownerLoop() == this);
+    if(eventHandling_) //在执行相应事件当中，不能移除当前和发生事件的channel
     {
-           assert(channel==currentActiveChannel_||
-           std::find(channells.begin(),channells.end(),channel)==channells.end());
+           //assert(channel==currentActiveChannel_||std::find(channells.begin(),channells.end(),channel)==channells.end());
     }
     poller->removeChannel(channel);
 
@@ -85,21 +94,23 @@ bool Eventloop::isInLoopThread() const
 void Eventloop::runinLoop(Functor &cb) {
     if(isInLoopThread())
     {
-        cb()
+        cb();
     }
     else
     {
-        queueInLoop(cb)
+        queueInLoop(cb);
     }
 }
 void Eventloop::queueInLoop(Functor &cb)
 {
-    MutexLock.lock();
-    pendingFunctors_.push_back(cb);//添加任务
-    MutexLock.unlock();
+    {
+        std::lock_guard<std::mutex> lockGuard(MutexLock);
+
+        pendingFunctors_.push_back(cb);//添加任务
+    }
     if(!isInLoopThread()||callingPendingFunctors)
     {
-        wakeup()
+        wakeup();
     }
 
 }
@@ -130,9 +141,10 @@ void Eventloop::doPendingFunctors()
     //创建一个新的vector来存任务队列
     std::vector<Functor> newpendingFunctors_;
     callingPendingFunctors= true;
-    MutexLock.lock();
-    newpendingFunctors_.swap(pendingFunctors_);//交换值
-    MutexLock.unlock();
+    {
+        std::lock_guard<std::mutex> lockGuard(MutexLock);
+        newpendingFunctors_.swap(pendingFunctors_);//交换值
+    }
     for(int i=0;i<newpendingFunctors_.size();i++)
     {  //执行任务队列中的函数
         newpendingFunctors_[i]();
@@ -140,7 +152,7 @@ void Eventloop::doPendingFunctors()
     callingPendingFunctors= false;
 
 }
-void EventLoop::printActiveChannels() const
+void Eventloop::printActiveChannels() const
 {
     //输出发生的事件
 //   for(auto i::channells)

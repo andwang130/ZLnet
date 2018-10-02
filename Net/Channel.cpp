@@ -12,11 +12,11 @@ using namespace ZL::Net;
 const int NoneEvent = 0;
 const int ReadEvent = EPOLLIN | EPOLLPRI;
 const int WriteEvent = EPOLLOUT;
-Channel::Channel(Evevtloop *loop_,int fd):loop(loop_),sockefd(fd)
+Channel::Channel(Eventloop *loop_,int fd):loop(loop_),sockefd(fd)
 {
     index_=1;
 }
-void Channel::setreadCallbck(const EventCallback &cb)
+void Channel::setreadCallbck(const ReadEventback &cb)
 {
     readCallback=cb;
 }
@@ -26,7 +26,7 @@ void Channel::setwriteCallbck(const EventCallback &cb)
 }
 void Channel::seteeorCallbck(const EventCallback &cb)
 {
-    seteeorCallbck=cb;
+    eeorCallbck=cb;
 }
 void Channel::setcloseCallbck(const EventCallback &cb)
 {
@@ -82,7 +82,7 @@ void Channel::handleEvent(int time)
     {
         if(readCallback)
         {
-            readCallback();
+            readCallback(time);
         }
     }
     if(revents_&EPOLLOUT)
@@ -135,4 +135,8 @@ bool Channel::isReading()
 void Channel::remove()
 {   addedToLoop_= false;
     loop->removeChannel(this);
+}
+Eventloop * Channel::ownerLoop()
+{
+    return loop;
 }

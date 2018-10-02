@@ -78,7 +78,7 @@ void Epollpoller::updateChannel(Channel *channel)
         }
         else
         {
-            update(EPOLL_CTL_MOD,Channel);
+            update(EPOLL_CTL_MOD,channel);
 
         }
     }
@@ -118,8 +118,8 @@ void Epollpoller::removeChannel(Channel *channel)
     channel->set_index(kNew);
 
 }
-Epollpoller::Epollpoller()
+Epollpoller::Epollpoller():eventlist(eventnumber)
 {
     epoolfd=epoll_create1(EPOLL_CLOEXEC);
-    eventlist(eventnumber);
+
 }

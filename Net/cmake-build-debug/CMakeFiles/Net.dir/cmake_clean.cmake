@@ -5,6 +5,9 @@ file(REMOVE_RECURSE
   "CMakeFiles/Net.dir/Socket.cpp.o"
   "CMakeFiles/Net.dir/TcpServer.cpp.o"
   "CMakeFiles/Net.dir/EventloopThread.cpp.o"
+  "CMakeFiles/Net.dir/Eventloop.cpp.o"
+  "CMakeFiles/Net.dir/Channel.cpp.o"
+  "CMakeFiles/Net.dir/Epollpoller.cpp.o"
   "Net.pdb"
   "Net"
 )

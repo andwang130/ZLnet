@@ -59,7 +59,7 @@ void Tcpcoonetion::handlewrite()
            //readableBytes返回剩余的字节
            if(ouptBuffer.readableBytes()==0)
            {    //缓冲区的数据全部发送完了,关闭可写事件的监听
-               channel_->disableWriting()
+               channel_->disableWriting();
                if(writecallback)
                {
                    loop_->queueInLoop(std::bind(writecallback,shared_from_this()))//回调函数传入线程队列
@@ -67,7 +67,7 @@ void Tcpcoonetion::handlewrite()
                if(state_==kDisconnecting)
                {
                    shutdownInLoop();
-               }shutdownInLoop
+               }
            }
        }
        else
