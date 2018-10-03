@@ -14,15 +14,15 @@
 namespace  ZL {
 namespace Net {
 class inetAddress; //类的向前申明
-class EventLoop;
+class Eventloop;
 class Channel;
 typedef std::function<void(int socketfd, const inetAddress &)> NewConnectionCallback;
 
-class Acceptor : public Mboost::noncopyable {
-
+class Acceptor : Mboost::noncopyable
+{
 public:
     //构造函数
-    Acceptor(EventLoop *loop, inetAddress &inetAddress, bool reuseport);
+    Acceptor(Eventloop *loop, inetAddress &inetAddress, bool reuseport);
 
     ~Acceptor();
 
@@ -30,15 +30,14 @@ public:
     void setNewConnectionCallback(NewConnectionCallback &cb);
 
     //返回listen的状态
-    bool listenning() const { return listenning_; }
+    bool listenning() const ;
 
     //执行socket的listen函数
     void listen();
-
 private:
-    void handelRea();
+    void handleread(int m);
 
-    EventLoop *_loop;
+    Eventloop *_loop;
     Socket socket_;  //scoket类，封装的sokcet的系统函数
     Channel *acceptChannel_;
     NewConnectionCallback newConnectionCallback_;
@@ -46,7 +45,7 @@ private:
     int idleFd_; //文件描述符
 
 
-        };
+};
     }
 }
 

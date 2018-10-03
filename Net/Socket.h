@@ -45,7 +45,7 @@ public:
     void setReusePort(bool on);
 
     void setKeepAlive(bool on);
-
+    int get_fd();
 private:
     int socketfd;
     sockaddr_in server_in;

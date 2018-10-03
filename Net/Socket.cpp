@@ -148,3 +148,7 @@ void Socket::setKeepAlive(bool on)
     ::setsockopt(socketfd, SOL_SOCKET, SO_KEEPALIVE,
                  &optval, static_cast<socklen_t>(sizeof optval));
 }
+int Socket::get_fd()
+{
+    return socketfd;
+}

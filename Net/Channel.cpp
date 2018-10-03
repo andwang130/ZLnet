@@ -16,7 +16,7 @@ Channel::Channel(Eventloop *loop_,int fd):loop(loop_),sockefd(fd)
 {
     index_=1;
 }
-void Channel::setreadCallbck(const ReadEventback &cb)
+void Channel::setreadCallbck(ReadEventback &cb)
 {
     readCallback=cb;
 }

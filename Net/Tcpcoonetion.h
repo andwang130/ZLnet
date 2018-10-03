@@ -16,7 +16,7 @@ class Channel;
 class Eventloop;
 
 //继承enable_shared_from_this类,可以使用shared_from_this函数来获取this的shared_ptr指针
-class Tcpcoonetion:std::enable_shared_from_this<Tcpcoonetion>
+class Tcpcoonetion:Mboost::noncopyable,public std::enable_shared_from_this<Tcpcoonetion>
         {
     typedef std::shared_ptr<Tcpcoontion> TcpcoontionPrt;
     typedef std::function<void (const TcpcoontionPrt&)> ConnectionCallback;

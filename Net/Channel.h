@@ -17,11 +17,10 @@ class Channel {
     typedef std::function<void()> EventCallback;//定义一个发生事件时的回调函数
     typedef std::function<void(int)> ReadEventback;
 public:
-
     //构造函数，两个参数。一个改对象属于的Eventloop的指针，和socket描述符
     Channel(Eventloop *loop_,int fd);
     //设置可读事件的回调函数
-    void setreadCallbck(const ReadEventback &cb);
+    void setreadCallbck(ReadEventback &cb);
 
     //设置可写事件的回调函数
     void setwriteCallbck(const EventCallback &cb);

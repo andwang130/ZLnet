@@ -3,10 +3,13 @@
 //
 
 #include "EventloopThread.h"
-
-EventloopThread::EventloopThread(ThreadInitCallback &cb):
+#include "Eventloop.h"
+using namespace ZL;
+using namespace ZL::Net;
+EventloopThread::EventloopThread(ThreadInitCallback &cb,std::string name):
         loop_(nullptr),
-        callback_(cb)
+        callback_(cb),
+        name_(name)
 {
 
 }
@@ -43,5 +46,5 @@ void EventloopThread::theradfun()
     cond.notify_one();//唤醒starLoop函数
     }
     loop.loop();//启动事件监听
-    loop_= nullptr;
+    loop_= nullptr;  //loop生命周期结束，loop_指向空的指针
 }
