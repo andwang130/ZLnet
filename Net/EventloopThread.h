@@ -10,15 +10,14 @@
 #include <mutex>
 #include <functional>
 #include <condition_variable>
+#include "Callbacks.h"
 //Eventloop对应的信线程，EventloopThread有一个线程和Evevtloop对象
 namespace ZL {
 namespace Net {
-class Eventloop;
-    typedef std::function<void(Eventloop *)> ThreadInitCallback;
 class EventloopThread : Mboost::noncopyable {
 
 public:
-    EventloopThread(ThreadInitCallback &cb, std::string name);
+    EventloopThread(const ThreadInitCallback &cb, std::string name);
 
     ~EventloopThread();
 

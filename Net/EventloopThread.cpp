@@ -6,7 +6,7 @@
 #include "Eventloop.h"
 using namespace ZL;
 using namespace ZL::Net;
-EventloopThread::EventloopThread(ThreadInitCallback &cb,std::string name):
+EventloopThread::EventloopThread(const ThreadInitCallback &cb,std::string name):
         loop_(nullptr),
         callback_(cb),
         name_(name)

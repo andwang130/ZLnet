@@ -6,23 +6,17 @@
 #define NET_TCPCOONTION_H
 
 #include <iostream>
-#include <functional>
 #include <memory>
 #include "Socket.h"
 #include "Buffer.h"
+#include "Callbacks.h"
+#include "Eventloop.h"
 namespace ZL{
 namespace Net {
 class Channel;
-class Eventloop;
-
 //继承enable_shared_from_this类,可以使用shared_from_this函数来获取this的shared_ptr指针
 class Tcpcoonetion:Mboost::noncopyable,public std::enable_shared_from_this<Tcpcoonetion>
         {
-    typedef std::shared_ptr<Tcpcoontion> TcpcoontionPrt;
-    typedef std::function<void (const TcpcoontionPrt&)> ConnectionCallback;
-    typedef std::function<void(const TcpcoontionPrt&)> CloseCallback;
-    typedef std::function<void (const TcpcoontionPrt&)> WriteCompleteCallback;
-    typedef std::function<void(const TcpcoontionPrt&,Buffer *buffer,int timeMs)> MessageCallback;
 public:
     Tcpcoonetion(Eventloop *loop,int fd);
     void send();

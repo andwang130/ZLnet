@@ -6,10 +6,8 @@
 #define NET_ACCEPTOR_H
 
 #include <iostream>
-#include "Mboost.h"
 #include "Socket.h"
 #include <functional>
-#include "inetAddress.h"
 //Acceptor类主要监控连接
 namespace  ZL {
 namespace Net {
@@ -22,12 +20,12 @@ class Acceptor : Mboost::noncopyable
 {
 public:
     //构造函数
-    Acceptor(Eventloop *loop, inetAddress &inetAddress, bool reuseport);
+    Acceptor(Eventloop *loop, inetAddress &address, bool reuseport);
 
     ~Acceptor();
 
     //设置一个新的连接来到时的回调函数
-    void setNewConnectionCallback(NewConnectionCallback &cb);
+    void setNewConnectionCallback(const NewConnectionCallback &cb);
 
     //返回listen的状态
     bool listenning() const ;

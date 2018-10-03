@@ -3,11 +3,11 @@
 //
 
 #include "Eventloop.h"
-#include "Epollpoller.h"
 #include "Channel.h"
 #include <assert.h>
 #include "CurrentThread.h"
 #include <sys/eventfd.h>
+
 using namespace ZL;
 using namespace ZL::Net;
 const int timeOutMS=1000;
@@ -34,7 +34,8 @@ Eventloop::Eventloop():poller(new Epollpoller()),
                        wakeupChannel_(new Channel(this,wakeupFd_))
 
 {
-wakeupChannel_->setreadCallbck(std::bind(&Eventloop::readhanel,this));//设置可读回调函数
+
+wakeupChannel_->setreadCallbck(std::bind(&Eventloop::readhanel,this,std::placeholders::_1));//设置可读回调函数
 wakeupChannel_->enableReading();//开启可读事件监听
 
 }
@@ -91,7 +92,7 @@ bool Eventloop::isInLoopThread() const
     return threadId_==CurrentThread::tid();
 }
 
-void Eventloop::runinLoop(Functor &cb) {
+void Eventloop::runinLoop(const Functor &cb) {
     if(isInLoopThread())
     {
         cb();
@@ -101,7 +102,7 @@ void Eventloop::runinLoop(Functor &cb) {
         queueInLoop(cb);
     }
 }
-void Eventloop::queueInLoop(Functor &cb)
+void Eventloop::queueInLoop(const Functor &cb)
 {
     {
         std::lock_guard<std::mutex> lockGuard(MutexLock);
@@ -126,7 +127,7 @@ void Eventloop::wakeup()
 }
 
 
-void Eventloop::readhanel()
+void Eventloop::readhanel(int m)
 {
     uint64_t one = 1;
     ssize_t n = ::read(wakeupFd_, &one, sizeof one);

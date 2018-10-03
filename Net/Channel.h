@@ -20,7 +20,7 @@ public:
     //构造函数，两个参数。一个改对象属于的Eventloop的指针，和socket描述符
     Channel(Eventloop *loop_,int fd);
     //设置可读事件的回调函数
-    void setreadCallbck(ReadEventback &cb);
+    void setreadCallbck(const ReadEventback &cb);
 
     //设置可写事件的回调函数
     void setwriteCallbck(const EventCallback &cb);

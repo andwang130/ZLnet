@@ -9,6 +9,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <errno.h>
+
 using  namespace ZL;
 using namespace ZL::Net;
 Socket::Socket(sockaddr_in &addr)
@@ -50,7 +51,7 @@ void Socket::listen()
         //出现错误以后执行的代码
     }
 }
-int Socket::accept()
+int Socket::accept(inetAddress &inaddr)
 {
     sockaddr_in addr;
     socklen_t addrlen = static_cast<socklen_t>(sizeof addr);
@@ -91,6 +92,7 @@ int Socket::accept()
                 break;
         }
     }
+    inaddr.set_addr(addr);
     return connfd;
 }
 void Socket::shutdownwrit()

@@ -31,10 +31,10 @@ public:
     void removeChannel(Channel *channel);
 
     //向任务队列添加一个任务
-    void runinLoop(Functor &cb);
+    void runinLoop(const Functor &cb);
 
     //添加队列的具体执行
-    void queueInLoop(Functor &cb);
+    void queueInLoop(const  Functor &cb);
 
     //发送信号激活任务队列
     void wakeup();
@@ -43,7 +43,7 @@ public:
     bool isInLoopThread()const ;
 
     //wakeupChannel_的可读回调函数
-    void readhanel();
+    void readhanel(int m);
 
 
     void printActiveChannels() const;

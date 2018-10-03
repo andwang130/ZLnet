@@ -4,7 +4,6 @@
 
 #include "Channel.h"
 #include <sys/epoll.h>
-#include <poll.h>
 #include "Eventloop.h"
 using namespace ZL;
 using namespace ZL::Net;
@@ -16,7 +15,7 @@ Channel::Channel(Eventloop *loop_,int fd):loop(loop_),sockefd(fd)
 {
     index_=1;
 }
-void Channel::setreadCallbck(ReadEventback &cb)
+void Channel::setreadCallbck(const ReadEventback &cb)
 {
     readCallback=cb;
 }

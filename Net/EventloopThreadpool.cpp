@@ -22,7 +22,7 @@ EventloopThreadpool::~EventloopThreadpool()
 
 }
 
-void EventloopThreadpool::start(ThreadInitCallback &cb)
+void EventloopThreadpool::start(const ThreadInitCallback &cb)
 {
     //不可以重复执行start
     assert(!started_);
@@ -38,7 +38,7 @@ void EventloopThreadpool::start(ThreadInitCallback &cb)
     }
     if(Threadnumbre==0&&cb)
     {
-        cb(baseloop);
+      cb(baseloop);
     }
 }
 

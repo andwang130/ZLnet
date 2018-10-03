@@ -7,9 +7,12 @@
 
 #include <vector>
 #include "StringPiece.h"
+namespace ZL{
+namespace Net{
 class Buffer {
 
-
+    static const size_t kCheapPrepend = 8;
+    static const size_t kInitialSize = 1024;
 public:
     explicit Buffer(size_t initialSize = kInitialSize);
     void swap(Buffer& rhs);
@@ -68,9 +71,10 @@ public:
 
     void appendInt64(int64_t x);
 
-    void appendInt32(int32_t x);
 
     void appendInt32(int32_t x);
+
+    void appendInt16(int16_t x);
 
     void appendInt8(int8_t x);
 
@@ -102,7 +106,6 @@ public:
 
     void shrink(size_t reserve);
 
-    void shrink(size_t reserve);
 
     ssize_t readFd(int fd, int* savedErrno);
 
@@ -121,6 +124,8 @@ private:
     int readindex_;
     int writeindex_;
 };
+}
+}
 
 
 #endif //NET_BUFFER_H

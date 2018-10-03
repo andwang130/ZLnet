@@ -9,12 +9,11 @@
 #include <vector>
 #include <functional>
 #include <string>
-
+#include "Callbacks.h"
 namespace ZL{
 namespace Net{
 class EventloopThread;
-class Eventloop;
-typedef std::function<void(Eventloop *)> ThreadInitCallback;
+
 class EventloopThreadpool {
 
 public:
@@ -22,7 +21,7 @@ public:
     ~EventloopThreadpool();
     void set_Threadnumbre(int num);
 
-    void start(ThreadInitCallback &cb);
+    void start(const ThreadInitCallback &cb);
 
     //Eventloop返回下一个
     Eventloop* get_Nextloop();

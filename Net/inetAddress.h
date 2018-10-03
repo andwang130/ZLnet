@@ -6,12 +6,25 @@
 #define NET_INETADDRESS_H
 
 #include<netinet/in.h>
+#include <iostream>
 namespace ZL {
 namespace Net {
 class inetAddress {
 public:
+    inetAddress(void);
     inetAddress(const char *ip, int port);
+    inetAddress(const sockaddr_in addr_);
+
+    std::string get_ip();
+    uint16_t get_port();
+    void set_addr(const sockaddr_in addr_);
+    sockaddr_in get_addr();
     sockaddr_in addr;
+private:
+    sockaddr * getSockAddr();
+
+    void toIp(char* buf, size_t size, const struct sockaddr_in * addr);
+
 };
 }
 }

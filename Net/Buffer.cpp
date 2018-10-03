@@ -4,6 +4,9 @@
 
 #include "Buffer.h"
 #include <sys/uio.h>
+#include <endian.h>
+using namespace ZL;
+using namespace ZL::Net;
 const char Buffer::kCRLF[] = "\r\n";
 const size_t Buffer::kCheapPrepend;
 const size_t Buffer::kInitialSize;
@@ -219,7 +222,7 @@ void Buffer::unwrite(size_t len)
 ///
 void Buffer::appendInt64(int64_t x)
 {
-    int64_t be64 = sockets::hostToNetwork64(x);
+    int64_t be64 = htobe64(x);
     append(&be64, sizeof be64);
 }
 
@@ -228,13 +231,13 @@ void Buffer::appendInt64(int64_t x)
 ///
 void Buffer::appendInt32(int32_t x)
 {
-    int32_t be32 = sockets::hostToNetwork32(x);
+    int32_t be32 = htobe32(x);
     append(&be32, sizeof be32);
 }
 
-void Buffer::appendInt32(int32_t x)
+void Buffer::appendInt16(int32_t x)
 {
-    int16_t be16 = sockets::hostToNetwork16(x);
+    int16_t be16 = htole32(x);
     append(&be16, sizeof be16);
 }
 
@@ -275,6 +278,7 @@ int16_t Buffer::readInt16()
 int8_t Buffer::readInt8()
 {
     int8_t result = peekInt8();
+    int8_t result = peekInt8();
     retrieveInt8();
     return result;
 }
@@ -288,7 +292,7 @@ int64_t Buffer::peekInt64() const
     assert(readableBytes() >= sizeof(int64_t));
     int64_t be64 = 0;
     ::memcpy(&be64, peek(), sizeof be64);
-    return sockets::networkToHost64(be64);
+    return be64toh(be64);
 }
 
 ///
@@ -300,7 +304,7 @@ int32_t Buffer::peekInt32() const
     assert(readableBytes() >= sizeof(int32_t));
     int32_t be32 = 0;
     ::memcpy(&be32, peek(), sizeof be32);
-    return sockets::networkToHost32(be32);
+    return be32toh(be32);
 }
 
 int16_t Buffer::peekInt16() const
@@ -308,7 +312,7 @@ int16_t Buffer::peekInt16() const
     assert(readableBytes() >= sizeof(int16_t));
     int16_t be16 = 0;
     ::memcpy(&be16, peek(), sizeof be16);
-    return sockets::networkToHost16(be16);
+    return be16toh(be16);
 }
 
 int8_t Buffer::peekInt8() const
@@ -323,7 +327,7 @@ int8_t Buffer::peekInt8() const
 ///
 void Buffer::prependInt64(int64_t x)
 {
-    int64_t be64 = sockets::hostToNetwork64(x);
+    int64_t be64 = htobe64(x);
     prepend(&be64, sizeof be64);
 }
 
@@ -332,13 +336,13 @@ void Buffer::prependInt64(int64_t x)
 ///
 void Buffer::prependInt32(int32_t x)
 {
-    int32_t be32 = sockets::hostToNetwork32(x);
+    int32_t be32 = htobe32(x);
     prepend(&be32, sizeof be32);
 }
 
 void Buffer::prependInt16(int16_t x)
 {
-    int16_t be16 = sockets::hostToNetwork16(x);
+    int16_t be16 = htole16(x);
     prepend(&be16, sizeof be16);
 }
 

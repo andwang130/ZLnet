@@ -7,7 +7,7 @@
 
 #include <netinet/in.h>
 #include "Mboost.h"
-
+#include "inetAddress.h"
 //socket类，封装了操作的socket类
 namespace ZL {
 namespace Net {
@@ -24,7 +24,7 @@ public:
 
     void listen();
 
-    int accept();
+    int accept(inetAddress &inaddr);
 
     //关闭套节字的写
     void shutdownwrit();

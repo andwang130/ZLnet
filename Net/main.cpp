@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
 #include <functional>
+#include "Tcpcoonetion.h"
 int func_text(int n)
 {
     std::cout<<n<<std::endl;
@@ -27,9 +28,9 @@ private:
 int main() {
     std::cout << "Hello, World!" << std::endl;
 
-    Ctext ctext;
-    ctext.i=12;
-    ctext.start();
+//    Ctext ctext;
+//    ctext.i=12;
+//    ctext.start();
 
     return 0;
 }
