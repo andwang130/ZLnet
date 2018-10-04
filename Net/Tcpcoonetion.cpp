@@ -7,7 +7,8 @@
 #include <unistd.h>
 using  namespace ZL;
 using namespace Net;
-Tcpcoonetion::Tcpcoonetion(Eventloop *loop ,int fd):loop_(loop),
+Tcpcoonetion::Tcpcoonetion(Eventloop *loop ,int fd,std::string name):loop_(loop),
+                                                                name_(name),
                                                     channel_(new Channel(loop,fd)),
                                                     socketfd(fd),
                                                     scoektprt(new Socket(fd)),
@@ -69,6 +70,7 @@ void Tcpcoonetion::handlewrite()
                    shutdownInLoop();
                }
            }
+
        }
        else
        {
@@ -127,9 +129,77 @@ void Tcpcoonetion::shutdownInLoop()
     }
 
 }
-void sendloop()
+void Tcpcoonetion::sendloop( const StringPiece &message)
 {
+    sendInLoop(message.data(),message.size());
+}
+void Tcpcoonetion::sendloop(const  std::string &message);
+{
+sendInLoop(message.data(),data.size())
+}
+void Tcpcoonetion::sendInLoop(const void* data, size_t len)
+{
+    ssize_t nwrote = 0;
+    size_t remaining = len;
+    bool faultError = false;
+    if (state_ ==kDisconnected)
+    {
+        //LOG_WARN << "disconnected, give up writing";
+        return;
+    }
+    // if no thing in output queue, try writing directly
 
+    //没有在监听可读事件和缓冲区的数据为空，
+    if(!channel_->isWriting()&&ouptBuffer.readableBytes()==0)
+    {
+         nwrote=::write(channel_->get_fd(),data,len);
+         if (nwrote>=0) //发送成功
+         {
+             remaining=len-nwrote;
+             if(remaining==0&&writecallback) //数据全部发送完成
+             {
+
+                 loop_->runinLoop(std::bind(writecallback,shared_from_this()));
+
+             }
+
+
+         }
+         else  //发送失败了
+         {
+             nwrote=0;
+             if (errno != EWOULDBLOCK)
+             {
+                 //LOG_SYSERR << "TcpConnection::sendInLoop";
+                 if (errno == EPIPE || errno == ECONNRESET) // FIXME: any others?
+                 {
+                     faultError = true;
+                 }
+             }
+         }
+    }
+
+
+    assert(remaining <= len);
+    if (!faultError && remaining > 0) //发送失败了，把数据存了缓冲区，下次发送
+
+    {
+        size_t oldLen = ouptBuffer.readableBytes();
+
+//        if (oldLen + remaining >= highWaterMark_
+//            && oldLen < highWaterMark_
+//            && highWaterMarkCallback_)
+//        {
+//            loop_->queueInLoop(boost::bind(highWaterMarkCallback_, shared_from_this(), oldLen + remaining));
+//        }
+        ouptBuffer.append(static_cast<const char*>(data)+nwrote, remaining);
+        if (!channel_->isWriting())
+        {
+            channel_->enableWriting();
+            //注册一个可写事件的监听，在对方读取数据的时候会触发
+            //然后调用handlewrite继续写入，直到写完为止
+        }
+    }
 }
 void Tcpcoonetion::setstate(StateE st)
 {
@@ -159,4 +229,8 @@ void Tcpcoonetion::connectDestroyed()
         coonCallback(shared_from_this());
     }
     channel_->remove();
+}
+std::string Tcpcoonetion::get_name()
+{
+    return name_;
 }

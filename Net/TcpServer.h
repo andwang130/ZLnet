@@ -9,6 +9,7 @@
 #include <string>
 #include "Callbacks.h"
 #include <memory>
+#include <map>
 namespace ZL {
 namespace Net {
 class Eventloop;
@@ -22,7 +23,7 @@ class TcpServer {
         kReusePort,
     };
 public:
-    TcpServer(Eventloop *loop,inetAddress &addrs,std::string name,Option option);
+    TcpServer(Eventloop *loop,inetAddress &addrs,std::string name,Option option=kNoReusePort);
     ~TcpServer();
 
     void start();
@@ -38,6 +39,7 @@ public:
 
     void set_threadnumber(int num);
 
+    //Acceptor接到新的连接调用的函数
     //CloseCallback调用
     void removeConnection(const TcpcoontionPrt &tcprt);
 
@@ -45,7 +47,7 @@ public:
 private:
 
     //acceptor_监听到有新的连接调用
-    void new_connection(int fd,inetAddress &addr);
+    void new_connection(int fd,const inetAddress &addr);
     //主线程的loop;
     Eventloop *loop_;
     //服务器的名字
@@ -68,7 +70,7 @@ private:
     WriteCompleteCallback writeCompleteCallback_;
     ConnectionCallback connectionCallback_;
     ThreadInitCallback threadInitCallback_;
-
+    std::map<std::string,TcpcoontionPrt> coonections_;
     //连接数
     int nextConnId_;
 

@@ -1,36 +1,44 @@
 #include <iostream>
-#include <thread>
-#include <functional>
+#include "TcpServer.h"
 #include "Tcpcoonetion.h"
-int func_text(int n)
+using namespace std;
+using namespace ZL;
+using namespace ZL::Net;
+class test
 {
-    std::cout<<n<<std::endl;
-}
-class Ctext{
-
 public:
-    int i;
+    test(Eventloop *loop,inetAddress &address,std::string name):tcpServer(new TcpServer(loop,address,name))
+    {
+
+    }
     void start()
     {
-        t1=std::thread(std::bind(&Ctext::func,this,1));
 
+        tcpServer->start();
     }
-    void func(int x)
-    {
-        std::cout<<i<<std::endl;
-    }
-    ~Ctext(){
-        t1.join();
-    }
+
 private:
-    std::thread t1;
+    void cooncallback(TcpcoontionPrt &coon)
+    {
+        cout<<coon->get_name()<<endl;
+    }
+    void meassgcallback(TcpcoontionPrt &coon,Buffer*buffer,int m)
+    {
+        cout<<coon->get_name()<<endl;
+    }
+    void writecallback(TcpcoontionPrt &coon)
+    {
+        cout<<coon->get_name()<<endl;
+    }
+    std::shared_ptr<TcpServer> tcpServer;
 };
+
 int main() {
     std::cout << "Hello, World!" << std::endl;
-
-//    Ctext ctext;
-//    ctext.i=12;
-//    ctext.start();
+    inetAddress address("127.0.0.1",8080);
+    Eventloop loop;
+    test new_test(&loop,address,"testserver");
+    new_test.start();
 
     return 0;
 }

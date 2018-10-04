@@ -18,7 +18,7 @@ class Channel;
 class Tcpcoonetion:Mboost::noncopyable,public std::enable_shared_from_this<Tcpcoonetion>
         {
 public:
-    Tcpcoonetion(Eventloop *loop,int fd);
+    Tcpcoonetion(Eventloop *loop,int fd,std::string name);
     void send();
     //设置回调函数
     void set_coonCallback(const ConnectionCallback &cb);
@@ -29,14 +29,18 @@ public:
 
     void set_messageCallback(const MessageCallback &cb);
 
+    void sendloop( const StringPiece &message);
+    void sendloop( const std::string &message);
     //启动监听可读事件
     void connectEstablished();
 
     //关闭监听事件，从eventloop中移除Channel
     void connectDestroyed();
 
-private:
+    std::string get_name();
 
+private:
+    void sendInLoop(const void* data, size_t len);
     enum StateE { kDisconnected, kConnecting, kConnected, kDisconnecting };
     void setstate(StateE st);
     //关闭事件回调函数，注册到Channel当中
@@ -72,6 +76,7 @@ private:
     MessageCallback messageCallback;
 
     //该链接的文件描述符
+    std::string name_;
     const int socketfd;
     StateE state_;  //连接所处的状态
     //Socket

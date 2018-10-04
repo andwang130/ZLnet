@@ -76,5 +76,7 @@ bool Acceptor::listenning() const
 }
 Acceptor::~Acceptor()
 {
-
+    acceptChannel_->enableReading();
+    acceptChannel_->remove();
+    ::close(idleFd_);
 }
