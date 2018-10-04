@@ -19,6 +19,8 @@ class Channel {
 public:
     //构造函数，两个参数。一个改对象属于的Eventloop的指针，和socket描述符
     Channel(Eventloop *loop_,int fd);
+
+    ~Channel();
     //设置可读事件的回调函数
     void setreadCallbck(const ReadEventback &cb);
 
@@ -62,6 +64,7 @@ private:
     int events_; //监听的事件类型
     int revents_;//响应的事件类型
     const int sockefd;//对应的socket描述符
+    bool eventHandling_;
     bool addedToLoop_;
     ReadEventback readCallback;  //可读事件回调函数
     EventCallback writeCallbck;   //可写事件回调函数

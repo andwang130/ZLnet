@@ -5,9 +5,11 @@
 #include "Buffer.h"
 #include <sys/uio.h>
 #include <endian.h>
+#include <algorithm>
 using namespace ZL;
 using namespace ZL::Net;
 const char Buffer::kCRLF[] = "\r\n";
+
 const size_t Buffer::kCheapPrepend;
 const size_t Buffer::kInitialSize;
 
@@ -44,7 +46,7 @@ ssize_t Buffer::readFd(int fd, int* savedErrno)
     // }
     return n;
 }
-Buffer::Buffer(size_t initialSize = kInitialSize)
+Buffer::Buffer(size_t initialSize )
 : buffer_(kCheapPrepend + initialSize),
 readerIndex_(kCheapPrepend),
 writerIndex_(kCheapPrepend)
@@ -235,7 +237,7 @@ void Buffer::appendInt32(int32_t x)
     append(&be32, sizeof be32);
 }
 
-void Buffer::appendInt16(int32_t x)
+void Buffer::appendInt16(int16_t x)
 {
     int16_t be16 = htole32(x);
     append(&be16, sizeof be16);
@@ -277,7 +279,6 @@ int16_t Buffer::readInt16()
 
 int8_t Buffer::readInt8()
 {
-    int8_t result = peekInt8();
     int8_t result = peekInt8();
     retrieveInt8();
     return result;
@@ -368,16 +369,12 @@ void Buffer::shrink(size_t reserve)
     swap(other);
 }
 
-void Buffer::shrink(size_t reserve)
-{
-    return buffer_.capacity();
-}
+
 
 /// Read data directly into buffer.
 ///
 /// It may implement with readv(2)
 /// @return result of read(2), @c errno is saved
-ssize_t Buffer::readFd(int fd, int* savedErrno);
 
 
 char* Buffer::begin()

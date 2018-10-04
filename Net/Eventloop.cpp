@@ -39,7 +39,12 @@ wakeupChannel_->setreadCallbck(std::bind(&Eventloop::readhanel,this,std::placeho
 wakeupChannel_->enableReading();//开启可读事件监听
 
 }
-
+Eventloop::~Eventloop()
+{
+    wakeupChannel_->disableAll();
+    wakeupChannel_->remove();
+    ::close(wakeupFd_);
+}
 void Eventloop::loop()
 {   looping_= true;
     quit_=false;
@@ -48,8 +53,7 @@ void Eventloop::loop()
 
         channells.clear();
         int timeMs=poller->poll(timeOutMS,channells);
-        if(channells.empty())
-
+        if(!channells.empty())
         {  printActiveChannels();//输出一下发生的事件
             eventHandling_= true;  //处理事件中
             for(std::vector<Channel *>::iterator ite=channells.begin();ite!=channells.end();ite++)
@@ -76,10 +80,11 @@ void Eventloop::quit()
 }
 void Eventloop::updateChannel(Channel *channel)
 {
+    assert(channel->ownerLoop() == this);
     poller->updateChannel(channel);
 }
 void Eventloop::removeChannel(Channel *channel)
-{ assert(channel->ownerLoop() == this);
+{   assert(channel->ownerLoop() == this);
     if(eventHandling_) //在执行相应事件当中，不能移除当前和发生事件的channel
     {
            //assert(channel==currentActiveChannel_||std::find(channells.begin(),channells.end(),channel)==channells.end());
@@ -161,5 +166,10 @@ void Eventloop::printActiveChannels() const
 //       const Channel* ch = *it;
 //
 //   }
+}
+bool Eventloop::hasChannel(Channel* channel)
+{
+    assert(channel->ownerLoop() == this);
+    return poller->hasChannel(channel);
 }
 

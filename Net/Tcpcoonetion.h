@@ -34,6 +34,7 @@ public:
     //启动监听可读事件
     void connectEstablished();
 
+    Eventloop * get_loop();
     //关闭监听事件，从eventloop中移除Channel
     void connectDestroyed();
 

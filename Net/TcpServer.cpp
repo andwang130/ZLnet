@@ -32,6 +32,7 @@ void TcpServer::start()
 }
 void TcpServer::new_connection(int fd,const  inetAddress &addr)
 {
+    std::cout<<"TCPserver,new_connection"<<std::endl;
     Eventloop *loop=eventloopThreadpool_->get_Nextloop();
     char buf[64];
     snprintf(buf, sizeof(buf),"%s:%d",addr.get_ip().c_str(),addr.get_port());
@@ -80,15 +81,16 @@ void TcpServer::set_threadnumber(int num)
 
 void TcpServer::removeConnection(const TcpcoontionPrt &tcprt)
 {
+    std::cout<<"Tcpsercer,removeConnection"<<std::endl;
     loop_->runinLoop(std::bind(&TcpServer::removeConnectionInLoop,this,tcprt));
 
 }
 
 void TcpServer::removeConnectionInLoop(const TcpcoontionPrt &tcprt)
 {
+    std::cout<<"Tcpsercer,removeConnectionInLoop"<<std::endl;
     size_t  n=coonections_.erase(tcprt->get_name());
-
-    Eventloop *loop=eventloopThreadpool_->get_Nextloop();
+    Eventloop *loop=tcprt->get_loop();
     loop->runinLoop(std::bind(&Tcpcoonetion::connectDestroyed,tcprt));
 
 }

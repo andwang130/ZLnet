@@ -92,3 +92,7 @@ bool EventloopThreadpool::get_started()
 {
     return started_;
 }
+void EventloopThreadpool::set_Threadnumbre(int num)
+{
+    Threadnumbre=num;
+}

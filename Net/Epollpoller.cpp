@@ -8,13 +8,15 @@
 #include <string.h>
 using namespace ZL;
 using namespace ZL::Net;
-const int kNew=1;
-const int kadd=2;
-const int kdeleted=3;
+const int kNew = -1;
+const int kAdded = 1;
+const int kDeleted = 2;
 const int eventnumber=16;
 
 int Epollpoller::poll(int timeoutMs,ChannelList &channells)
 {           //&*eventlist.begin()取vecort第一个值的指针,timeoutMs超时时间
+
+
     int ret=epoll_wait(epoolfd,&*eventlist.begin(), static_cast<int>(eventlist.size()),timeoutMs);
     int savedErrno = errno;
     if(ret>0)
@@ -46,7 +48,7 @@ void Epollpoller::updateChannel(Channel *channel)
 {
     int index=channel->get_index();
     int fd=channel->get_fd();
-    if(index==kNew||index==kdeleted) //处于new状态和kdeleted状态，在可以添加到epool当中
+    if(index==kNew||index==kDeleted) //处于new状态和kdeleted状态，在可以添加到epool当中
     {
         if(index==kNew)
         {
@@ -61,20 +63,20 @@ void Epollpoller::updateChannel(Channel *channel)
             assert(channels_.find(fd)!=channels_.end());
 
         }
-        channel->set_index(kadd);
+        channel->set_index(kAdded);
         update(EPOLL_CTL_ADD,channel);
 
     }
     else //kadd状态，已经在epool当中，更新状态
     {
-
-        assert(channels_.find(fd)==channels_.end());
+        assert(channels_.find(fd)!=channels_.end());
+        assert(channels_[fd] == channel);
         if(channel->isNoneEvent())//event状态为NoneEvent
         {
             //从epool当中删除
             update(EPOLL_CTL_DEL,channel);
             //状态设置以及删除
-            channel->set_index(kdeleted);
+            channel->set_index(kDeleted);
         }
         else
         {
@@ -106,11 +108,11 @@ void Epollpoller::removeChannel(Channel *channel)
     int index=channel->get_index();
 
     //kadd，kdeleted两种状态channel才在channels_当中
-    assert(index==kadd||index==kdeleted);
+    assert(index==kAdded||index==kDeleted);
     size_t n=channels_.erase(fd);
     //删除成功返回1
     assert(n==1);
-    if(index==kadd) //kadd状态，还在epool当种。从epool当中删除
+    if(index==kAdded) //kadd状态，还在epool当种。从epool当中删除
     {
         update(EPOLL_CTL_DEL,channel);
     }
@@ -122,4 +124,10 @@ Epollpoller::Epollpoller():eventlist(eventnumber)
 {
     epoolfd=epoll_create1(EPOLL_CLOEXEC);
 
+}
+
+bool Epollpoller::hasChannel(Channel* channel) const
+{
+    Channel_map::const_iterator it = channels_.find(channel->get_fd());
+    return it != channels_.end() && it->second == channel;
 }

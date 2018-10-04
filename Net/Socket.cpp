@@ -48,6 +48,8 @@ void Socket::listen()
     int ret=::listen(socketfd,10);
     if(ret<0)
     {
+
+        std::cout<<"listen eeor"<<std::endl;
         //出现错误以后执行的代码
     }
 }

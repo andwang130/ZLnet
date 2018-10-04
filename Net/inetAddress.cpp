@@ -29,13 +29,14 @@ void inetAddress::set_addr(const sockaddr_in addr_)
 {
     addr=addr_;
 }
-std::string inetAddress::get_ip() {
+std::string inetAddress::get_ip() const
+{
     char buf[64] = "";
     size_t size=64;
     ::inet_ntop(AF_INET, &addr.sin_addr, buf, static_cast<socklen_t>(size));
     return buf;
 }
-uint16_t inetAddress::get_port()
+uint16_t inetAddress::get_port() const
 {
     return be16toh(addr.sin_port);
 }

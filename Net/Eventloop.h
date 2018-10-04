@@ -19,7 +19,7 @@ class Eventloop {
     typedef std::function<void()> Functor;
 public:
     Eventloop();
-
+    ~Eventloop();
     //执行事件监听
     void loop();
 
@@ -45,6 +45,7 @@ public:
     //wakeupChannel_的可读回调函数
     void readhanel(int m);
 
+    bool hasChannel(Channel* channel);
 
     void printActiveChannels() const;
 private:

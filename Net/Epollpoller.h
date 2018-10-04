@@ -23,7 +23,7 @@ public:
     int poll(int timeoutMs,ChannelList &channells);
     void updateChannel(Channel *channel);
     void removeChannel(Channel *channel);
-
+    bool hasChannel(Channel* channel) const;
 private:
     void update(int option ,Channel *channel);
     Channel_map channels_;

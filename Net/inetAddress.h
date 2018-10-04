@@ -15,8 +15,8 @@ public:
     inetAddress(const char *ip, int port);
     inetAddress(const sockaddr_in addr_);
 
-    std::string get_ip();
-    uint16_t get_port();
+    std::string get_ip() const ;
+    uint16_t get_port() const ;
     void set_addr(const sockaddr_in addr_);
     sockaddr_in get_addr();
     sockaddr_in addr;

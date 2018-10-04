@@ -120,9 +120,11 @@ private:
 
     void makeSpace(size_t len);
 
-    std::vector<char> bufff_;
-    int readindex_;
-    int writeindex_;
+    std::vector<char> buffer_;
+    size_t readerIndex_;
+    size_t writerIndex_;
+
+    static const char kCRLF[];
 };
 }
 }

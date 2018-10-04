@@ -16,7 +16,7 @@ Tcpcoonetion::Tcpcoonetion(Eventloop *loop ,int fd,std::string name):loop_(loop)
 {
     channel_->setcloseCallbck(std::bind(&Tcpcoonetion::handleColse,this));
     channel_->setwriteCallbck(std::bind(&Tcpcoonetion::handlewrite,this));
-    channel_->setreadCallbck(std::bind(&Tcpcoonetion::handlerread,this,_1));
+    channel_->setreadCallbck(std::bind(&Tcpcoonetion::handlerread,this,std::placeholders::_1));
     channel_->seteeorCallbck(std::bind(&Tcpcoonetion::handleeeor,this));
     scoektprt->setKeepAlive(true);
 }
@@ -63,7 +63,7 @@ void Tcpcoonetion::handlewrite()
                channel_->disableWriting();
                if(writecallback)
                {
-                   loop_->queueInLoop(std::bind(writecallback,shared_from_this()))//回调函数传入线程队列
+                   loop_->queueInLoop(std::bind(writecallback,shared_from_this()));//回调函数传入线程队列
                }
                if(state_==kDisconnecting)
                {
@@ -133,10 +133,13 @@ void Tcpcoonetion::sendloop( const StringPiece &message)
 {
     sendInLoop(message.data(),message.size());
 }
-void Tcpcoonetion::sendloop(const  std::string &message);
+void Tcpcoonetion::sendloop(const  std::string &message)
 {
-sendInLoop(message.data(),data.size())
+    sendInLoop(message.data(),message.size());
 }
+
+
+
 void Tcpcoonetion::sendInLoop(const void* data, size_t len)
 {
     ssize_t nwrote = 0;
@@ -224,6 +227,7 @@ void Tcpcoonetion::connectDestroyed()
 {
     if(state_==kConnected)
     {
+
         setstate(kDisconnected);
         channel_->disableAll();
         coonCallback(shared_from_this());
@@ -233,4 +237,8 @@ void Tcpcoonetion::connectDestroyed()
 std::string Tcpcoonetion::get_name()
 {
     return name_;
+}
+Eventloop * Tcpcoonetion::get_loop()
+{
+    return loop_;
 }
