@@ -12,8 +12,10 @@ using namespace ZL::Net;
 const int NoneEvent = 0;
 const int ReadEvent = EPOLLIN | EPOLLPRI;
 const int WriteEvent = EPOLLOUT;
-Channel::Channel(Eventloop *loop_,int fd):loop(loop_),sockefd(fd),
-                                          eventHandling_(false)
+Channel::Channel(Eventloop *loop_,int fd):
+loop(loop_),sockefd(fd),
+eventHandling_(false),
+addedToLoop_(false)
 {
     index_=-1;
 }

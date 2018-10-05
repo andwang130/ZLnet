@@ -5,6 +5,7 @@
 #include "Tcpcoonetion.h"
 #include "Channel.h"
 #include <unistd.h>
+#include <assert.h>
 using  namespace ZL;
 using namespace Net;
 Tcpcoonetion::Tcpcoonetion(Eventloop *loop ,int fd,std::string name):loop_(loop),

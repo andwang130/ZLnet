@@ -1,6 +1,7 @@
 #include <iostream>
 #include "TcpServer.h"
 #include "Tcpcoonetion.h"
+#include <assert.h>
 using namespace std;
 using namespace ZL;
 using namespace ZL::Net;
@@ -15,7 +16,7 @@ public:
     }
     void start()
     {
-        tcpServer->set_threadnumber(10);
+        tcpServer->set_threadnumber(4);
         tcpServer->start();
     }
 

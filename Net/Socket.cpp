@@ -9,7 +9,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <errno.h>
-
+#include <assert.h>
 using  namespace ZL;
 using namespace ZL::Net;
 Socket::Socket(sockaddr_in &addr)
@@ -36,7 +36,8 @@ void Socket::bind()
 
  if(ret<0)
  {
-
+     //bind eeor
+    assert(ret>0);
  }
 }
 void Socket::Connect()

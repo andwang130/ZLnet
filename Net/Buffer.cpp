@@ -6,6 +6,7 @@
 #include <sys/uio.h>
 #include <endian.h>
 #include <algorithm>
+#include <assert.h>
 using namespace ZL;
 using namespace ZL::Net;
 const char Buffer::kCRLF[] = "\r\n";
